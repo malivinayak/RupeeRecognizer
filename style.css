@@ -51,7 +51,7 @@ html {
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     width: 90%;
-    margin: 20px auto;
+    margin: 0px auto 25px auto;
 }
 
 #projectName {
@@ -128,8 +128,12 @@ p {
 }
 
 /* Add hover effect to headings */
-.section h2:hover {
+.section h1 {
     color: #2196F3;
+}
+
+.section h1:hover {
+    color: #1449ac;
     transition: color 0.3s ease;
 }
 
@@ -202,7 +206,6 @@ p {
 #image-container img:hover {
     transform: scale(1.1); /* Scale up image on hover */
 }
-
 
 @media (max-width: 580px) {
     .navbar {
