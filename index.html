@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachable Machine Image Model</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="./profile.png" alt="Logo">
+            <div>malivinayak</div>
+        </div>
+        <div class="navbar-right">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="https://github.com/malivinayak/RupeeRecognizer" target="_blank">Source Code</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="home" class="content">
+            <h1 id="projectName">RupeeRecognizer</h1>
+            <h2 id="projectDescription">Teachable Machine Based Indian Currency Note Predictor</h2>
+            <input type="file" accept="image/*" id="image-selector" />
+            <div id="image-container"></div>
+            <button type="button" id="predict-button" disabled>Predict</button>
+            <div id="label-container">
+                <!-- Result items will be dynamically added here -->
+            </div>
+        </div>
+
+        <div id="about" class="section">
+            <h2>About</h2>
+            <p>This project harnesses the power of the Teachable Machine platform to accurately identify various denominations of Indian currency notes. By leveraging machine learning techniques, it analyzes image data to predict the authenticity and denomination of currency notes, including 10, 20, 50, 100, 200, and 500 Rs notes.</p>
+            
+            <p>The model has been meticulously trained on a dataset comprising over 450 images of each note denomination, sourced from diverse sources to ensure comprehensive coverage and robust performance. Each image undergoes rigorous analysis to extract meaningful features, enabling the model to make informed predictions.</p>
+            
+            <p>However, it's essential to acknowledge that while the model strives for accuracy, results may occasionally be subject to limitations inherent in any machine learning system. Factors such as image quality, lighting conditions, and variations in note condition may impact the model's predictions.</p>
+            
+            <p>The image dataset used in training this model is drawn from Kaggle, a reputable platform known for its vast and high-quality datasets. This ensures that the model is trained on a diverse range of real-world examples, enhancing its ability to generalize and perform effectively in practical scenarios.</p>
+        </div>
+        
+    </div>
+    <script type="text/javascript">
+        const MODEL_URL = "https://teachablemachine.withgoogle.com/models/Xmw66C7IR/";
+        let model, labelContainer, maxPredictions;
+
+        document.getElementById('image-selector').addEventListener('change', handleImageUpload);
+        document.getElementById('predict-button').addEventListener('click', predict);
+
+        async function init() {
+            const modelURL = MODEL_URL + "model.json";
+            const metadataURL = MODEL_URL + "metadata.json";
+
+            // Load the model and metadata
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            // Initialize label container
+            labelContainer = document.getElementById("label-container");
+            labelContainer.innerHTML = ""; // Clear previous results
+        }
+
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const img = document.createElement('img');
+                img.src = window.URL.createObjectURL(file);
+                img.id = 'selected-image';
+                img.onload = () => window.URL.revokeObjectURL(img.src);
+
+                const imageContainer = document.getElementById('image-container');
+                imageContainer.innerHTML = ''; // Clear previous images
+                imageContainer.appendChild(img);
+
+                document.getElementById('predict-button').disabled = false; // Enable predict button
+                labelContainer.innerHTML = ""; // Clear previous results
+            }
+        }
+
+        async function predict() {
+            const imageElement = document.getElementById('selected-image');
+            if (imageElement) {
+                const prediction = await model.predict(imageElement);
+
+                if (prediction.length > 0) {
+                    // Find the prediction with the highest probability
+                    let maxProbability = 0;
+                    let bestPrediction = null;
+                    for (let i = 0; i < prediction.length; i++) {
+                        if (prediction[i].probability > maxProbability) {
+                            maxProbability = prediction[i].probability;
+                            bestPrediction = prediction[i];
+                        }
+                    }
+
+                    // Display the result in a sentence
+                    if (bestPrediction && maxProbability > 0) {
+                        labelContainer.innerHTML = `The given image is most likely a ${bestPrediction.className} Rupee Note with a confidence of ${(maxProbability * 100).toFixed(2)}%.`;
+                    } else {
+                        labelContainer.innerHTML = "The model is confused and couldn't make a confident prediction.";
+                    }
+                } else {
+                    labelContainer.innerHTML = "The model is confused and couldn't make a confident prediction.";
+                }
+            }
+        }
+
+        // Initialize the model when the page loads
+        init();
+    </script>
+</body>
+
+</html>
