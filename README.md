@@ -2,6 +2,8 @@
 
 RupeeRecognizer is a web application that utilizes the Teachable Machine platform to predict various denominations of Indian currency notes through machine learning. It allows users to upload images of Indian currency notes and predicts their denominations.
 
+![RupeeRecognizer HomePage](./RupeeRecognizer_HomePage.jpg)
+
 ## Table of Contents
 
 - [Introduction](#introduction)
